@@ -50,6 +50,12 @@ createBoard(boardSize);
 
 document.querySelector('.start--button').addEventListener('click', function(e){
   stopGame = false;
+
+  document.querySelectorAll('.table--cell').forEach(function(element){
+    element.style.border = "none";
+    element.style.borderRadius = "100%";
+  });
+
   gameOfLife();
 });
 
