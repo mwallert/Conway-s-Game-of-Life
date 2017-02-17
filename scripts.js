@@ -1,6 +1,8 @@
 var boardSize = document.querySelector('.size--input');
 var intervalInstance;
 var stopGame;
+var currentState;
+var newGameState;
 
 if(!boardSize.value){
   boardSize = 50;
@@ -68,37 +70,52 @@ document.querySelector('.stop--button').addEventListener('click', function(e){
 });
 
 function gameOfLife(){
-  intervalInstance = setInterval(checkCells, 100);
+  intervalInstance = setInterval(checkCells, 250);
 }
 
 function checkCells(){
   if(stopGame){
     clearInterval(intervalInstance);
   } else {
-    var cells = document.querySelectorAll('.table--cell');
-    for(var i = 0; i < cells.length; i++){
-      var currentCell = document.getElementsByClassName('table--cell')[i];
+    currentState = document.getElementsByClassName('table--cell');
+    newGameState = [];
+    for(var i = 0; i < currentState.length; i++){
+      var currentCell = currentState[i];
       if(currentCell.classList.contains('alive')){
         checkRulesForLiveCell(currentCell, i);
       } else checkRulesForDeadCell(currentCell, i);
     }
+
+    for(var j = 0; j < currentState.length; j++){
+      document.getElementsByClassName('table--cell')[j].outerHTML = newGameState[j].outerHTML;
+    }
   }
+
 }
 
 function checkRulesForDeadCell(element, index){
-  var numberOfNeighbors = checkNeighbors(index);
-  if(numberOfNeighbors === 3){
-    element.classList += ' alive';
+  var myElement = element.cloneNode(true);
+
+  var numForNeighbors = checkNeighbors(index);
+
+  if(numForNeighbors === 3){
+    myElement.classList.add('alive');
   }
+
+  newGameState.push(myElement);
 }
 
 function checkRulesForLiveCell(element, index){
+  var newElement = element.cloneNode(true);
+
   var numberOfNeighbors = checkNeighbors(index);
   if(numberOfNeighbors < 2){
-    element.classList.remove('alive');
-  } else if(numberOfNeighbors === 2 || numberOfNeighbors === 3){
-    return;
-  } else element.classList.remove('alive');
+    newElement.classList.remove('alive');
+  } else if(numberOfNeighbors > 3){
+    newElement.classList.remove('alive');
+  }
+
+  newGameState.push(newElement);
 }
 
 function checkNeighbors(index){
